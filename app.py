@@ -5,11 +5,13 @@ from datetime import datetime, timedelta
 from random import shuffle
 import uuid
 
+time_per_Session = 1
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/abishek/Code/QuizAPI/database.db'
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = '09134832084uriehfdsh!'
-#app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=5)
+app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=time_per_Session)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -73,8 +75,7 @@ def questions(instance_id):
 	if 'questionIds' not in session:
 		session['questionIds'] = questionIds
 		session['questionNumbers'] = list(range(len(questionIds),0,-1))
-
-		#session.permanent=True
+		session.permanent=True
 		session['startTime'] = datetime.now()
 	localQuestionIds = session.get('questionIds')
 	questionNumbers = session.get('questionNumbers')
@@ -83,9 +84,8 @@ def questions(instance_id):
 		questionNumber = questionNumbers[-1]
 		question, options = original_questions.get(questionId)
 		session['lastQuestionId']=questionId
-	
 		timeElapsed = datetime.now() - session['startTime']
-		return render_template('questions.html', n = questionNumber,q = question, o = options, t= timedelta(minutes=60) - timeElapsed, i=current_user.instance_id)
+		return render_template('questions.html', n = questionNumber,q = question, o = options, t= timedelta(minutes=time_per_Session) - timeElapsed, i=current_user.instance_id)
 	else:
 		return redirect(url_for('confirmation'))
 
@@ -93,8 +93,9 @@ def questions(instance_id):
 def confirmation():
 	questions = [original_questions[i][0] for i in questionIds]
 	answers = [getattr(current_user, 'answer'+str(j)) for j in questionIds]
+	logout_user()
+	session['loggedIn']=False
 	return jsonify(dict(zip(questions, answers)))
-	#return render_template('confirmation.html', i = questions, k = questionIds)
 
 if __name__ == '__main__':
 	app.run()
