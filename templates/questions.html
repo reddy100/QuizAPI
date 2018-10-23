@@ -1,0 +1,12 @@
+<h1>{{n}}. {{q}}</h1>
+<form action="{{url_for('questions')}}" method='POST'>
+    {% for j in o %}
+        <input type='radio' value='{{j}}' name='userChoice' />{{j}}
+    {% endfor %}
+    <input type="submit" value="submit" />
+</form>
+
+<body>
+	<div id= "timer">{{t}}</div>
+
+</body>
