@@ -1,5 +1,5 @@
 <h1>{{n}}. {{q}}</h1>
-<form action="{{url_for('questions')}}" method='POST'>
+<form action="{{url_for('questions', instance_id=i)}}" method='POST'>
     {% for j in o %}
         <input type='radio' value='{{j}}' name='userChoice' />{{j}}
     {% endfor %}
