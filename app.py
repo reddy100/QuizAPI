@@ -82,7 +82,7 @@ def questions(instance_id):
 		questionId = localQuestionIds[-1]
 		questionNumber = questionNumbers[-1]
 		question, options = original_questions.get(questionId)
-		session['lastQuestionId']=questionNumber
+		session['lastQuestionId']=questionId
 	
 		timeElapsed = datetime.now() - session['startTime']
 		return render_template('questions.html', n = questionNumber,q = question, o = options, t= timedelta(minutes=60) - timeElapsed, i=current_user.instance_id)
@@ -92,9 +92,9 @@ def questions(instance_id):
 @app.route('/confirmation')
 def confirmation():
 	questions = [original_questions[i][0] for i in questionIds]
-	#answers = [getattr(current_user, 'answer'+str(j)) for j in questionIds]
-	#return jsonify(dict(zip(questions, answers)))
-	return render_template('confirmation.html', i = questions, k = questionIds)
+	answers = [getattr(current_user, 'answer'+str(j)) for j in questionIds]
+	return jsonify(dict(zip(questions, answers)))
+	#return render_template('confirmation.html', i = questions, k = questionIds)
 
 if __name__ == '__main__':
 	app.run()
